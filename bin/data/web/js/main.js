@@ -4,16 +4,10 @@ var messageDiv;
 var statusDiv;
 var button;
 var textField;
-var x = 0;
-  var y = 0;
-   
-  // Speed - Velocity
-  var vx = 0;
-  var vy = 0;
-   
-  // Acceleration
-  var ax = 0;
-  var ay = 0;
+// Shake sensitivity (a lower number is more)
+var sensitivity = 20;
+// Position variables
+var x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
    
   var delay = 10;
   var vMultiplier = 0.01;
@@ -61,11 +55,16 @@ $(document).ready( function() {
 
 // send value from text input
 function sendMessageForm(){
-	var c = hexToRgb(myColor);
-	socket.send(c.r*c.g*c.b);
+    myColor = get_random_color();
+    var c = hexToRgb(myColor);
+    console.log("Hex: "+myColor);
+    var color = ((1 << 24) | (c.r << 16) | (c.g << 8) | c.b);
+    console.log("Int: "+color);
+	
+	socket.send(color);
 	// socket.send(message.value);
 	message.value = "";
-	myColor = get_random_color()
+	
     changeBGC(myColor);
 }
 function hexToRgb(hex) {
@@ -121,28 +120,31 @@ function setupDevice()
     	// document.getElementById("yes").style.display="none";
      
     } else {
-    	window.ondevicemotion = function(event) {
+        window.addEventListener('devicemotion', function (e) {
+        x1 = e.accelerationIncludingGravity.x;
+        y1 = e.accelerationIncludingGravity.y;
+        z1 = e.accelerationIncludingGravity.z;
+    }, false);
+    	// window.ondevicemotion = function(event) {
     	 
-    		ax = event.accelerationIncludingGravity.x;
-    		ay = event.accelerationIncludingGravity.y;
-    	}
+    	// 	x1 = e.accelerationIncludingGravity.x;
+     //        y1 = e.accelerationIncludingGravity.y;
+     //        z1 = e.accelerationIncludingGravity.z;
+    	// }
      
     	setInterval(function() {
-    		vy = vy + -(ay);
-    		vx = vx + ax;
-     
-    		// var ball = document.getElementById("ball");
-    		y = parseInt(y + vy * vMultiplier);
-    		x = parseInt(x + vx * vMultiplier);
-    		
-    		if (x<0) { x = 0; vx = 0; }
-    		if (y<0) { y = 0; vy = 0; }
-    		if (x>document.documentElement.clientWidth-20) { x = document.documentElement.clientWidth-20; vx = 0; }
-    		if (y>document.documentElement.clientHeight-20) { y = document.documentElement.clientHeight-20; vy = 0; }
-    		socket.send(x);
-    		// ball.style.top = y + "px";
-    		// ball.style.left = x + "px";
-    		// document.getElementById("pos").innerHTML = "x=" + x + "<br />y=" + y;
+                
+               
+                var change = Math.abs(x1-x2+y1-y2+z1-z2);
+
+                if (change > sensitivity) {
+                     sendMessageForm();
+                }
+
+                // Update new position
+                x2 = x1;
+                y2 = y1;
+                z2 = z1;
     	}, delay);
     } 
 }
