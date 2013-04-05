@@ -17,7 +17,21 @@ var x = 0;
    
   var delay = 10;
   var vMultiplier = 0.01;
+  var myColor;
+function changeBGC(color){
+	document.body.style.backgroundColor=color;
+	
+}
+function get_random_color() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.round(Math.random() * 15)];
+    }
+    return color;
+}
 $(document).ready( function() {
+	
 	setupSocket();
 	setupDevice();
 	document.getElementById("brow").textContent = " " + BrowserDetect.browser + " "
@@ -40,13 +54,29 @@ $(document).ready( function() {
     		sendMessageForm()
     	}
     })
+    myColor = get_random_color()
+    changeBGC(myColor);
+    // socket.send(myColor);
 });
 
 // send value from text input
 function sendMessageForm(){
-	socket.send(message.value);
+	var c = hexToRgb(myColor);
+	socket.send(c.r*c.g*c.b);
+	// socket.send(message.value);
 	message.value = "";
+	myColor = get_random_color()
+    changeBGC(myColor);
 }
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
 
 // setup web socket
 function setupSocket(){
@@ -67,6 +97,7 @@ function setupSocket(){
 		socket.onopen = function() {
 			statusDiv.style.backgroundColor = "#40ff40";
 			statusDiv.textContent = " websocket connection opened ";
+			// socket.send(myColor);
 		} 
 
 		// received message

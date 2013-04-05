@@ -23,10 +23,34 @@ void testApp::setup(){
     
     ofBackground(0);
     ofSetFrameRate(60);
-}
+	numLED = row*col;
+	led = new ofxLEDsLPD8806(numLED);
+	
+	if(	spi.connect())
+	{
+		ofLogNotice()<<"connected to SPI";
+	}
 
+}
+void testApp::exit()
+{
+	led->clear(0);
+	
+	spi.send(led->txBuffer);
+}
 //--------------------------------------------------------------
 void testApp::update(){
+
+	
+	spi.send(led->txBuffer);
+	
+	led->renderBuffer.begin();
+	ofSetHexColor(hexColor);
+	ofRect(0,0,led->renderBuffer.getWidth(),led->renderBuffer.getHeight());
+
+	led->renderBuffer.end();
+	led->encode();
+	spi.send(led->txBuffer);
 }
 
 //--------------------------------------------------------------
@@ -57,6 +81,11 @@ void testApp::draw(){
     ofDrawBitmapString("Type a message, hit [RETURN] to send:", x, ofGetHeight()-60);
     ofSetColor(255);
     ofDrawBitmapString(toSend, x, ofGetHeight() - 40);
+	
+	ofPushMatrix();
+	ofScale(5, 5);
+	led->encodedBuffer.draw(0,0);
+	ofPopMatrix();
 }
 
 //--------------------------------------------------------------
@@ -87,6 +116,7 @@ void testApp::onMessage( ofxLibwebsockets::Event& args ){
     
     // trace out string messages or JSON messages!
     if ( !args.json.isNull() ){
+		hexColor = ofToInt(args.json.toStyledString());
         messages.push_back("New message: " + args.json.toStyledString() + " from " + args.conn.getClientName() );
     } else {
         messages.push_back("New message: " + args.message + " from " + args.conn.getClientName() );

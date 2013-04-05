@@ -1,5 +1,5 @@
 html {
-	padding:20px;
+	/*padding:20px;*/
 	font-family:Verdana;
 }
 
@@ -23,5 +23,5 @@ html {
 hr {
 	border:0px none;
 	height:1px;
-	background-color:#ddd;
+
 }

@@ -5,14 +5,17 @@
 #include "ofxLibwebsockets.h"
 
 #define NUM_MESSAGES 30 // how many past messages we want to keep
-
+#include "ofxLPD8806.h"
+#include "ofxLEDsLPD8806.h"
+#define row 1
+#define col 160
 class testApp : public ofBaseApp{
 
 	public:
 		void setup();
 		void update();
 		void draw();
-
+		void exit();
 		void keyPressed  (int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -40,4 +43,10 @@ class testApp : public ofBaseApp{
         void onIdle( ofxLibwebsockets::Event& args );
         void onMessage( ofxLibwebsockets::Event& args );
         void onBroadcast( ofxLibwebsockets::Event& args );
+	
+	ofxLEDsLPD8806 *led;
+	
+	ofxLPD8806 spi;
+	int numLED;
+	int hexColor;
 };
