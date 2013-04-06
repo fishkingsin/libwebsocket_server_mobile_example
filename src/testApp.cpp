@@ -41,15 +41,12 @@ void testApp::exit()
 //--------------------------------------------------------------
 void testApp::update(){
 
-	
-	spi.send(led->txBuffer);
-	
 	led->renderBuffer.begin();
-	ofSetHexColor(hexColor);
+	ofSetColor(color);
 	ofRect(0,0,led->renderBuffer.getWidth(),led->renderBuffer.getHeight());
 
 	led->renderBuffer.end();
-	led->encode();
+	// led->encode();
 	spi.send(led->txBuffer);
 }
 
@@ -84,7 +81,8 @@ void testApp::draw(){
 	
 	ofPushMatrix();
 	ofScale(5, 5);
-	led->encodedBuffer.draw(0,0);
+    led->renderBuffer.draw(20,10);
+	led->encodedBuffer.draw(20,20);
 	ofPopMatrix();
 }
 
@@ -113,10 +111,19 @@ void testApp::onIdle( ofxLibwebsockets::Event& args ){
 //--------------------------------------------------------------
 void testApp::onMessage( ofxLibwebsockets::Event& args ){
     cout<<"got message "<<args.message<<endl;
-    
+    vector<string>sub = ofSplitString(args.message,","); 
+        if(sub.size()==3)
+        {
+            color.r = ofToInt(sub[0]);
+            color.g = ofToInt(sub[1]);
+            color.b = ofToInt(sub[2]);
+             printf("got color %i %i %i \n",color.r,color.g,color.b);
+             led->clear(color);
+        }
     // trace out string messages or JSON messages!
     if ( !args.json.isNull() ){
-		hexColor = ofToInt(args.json.toStyledString());
+        
+		
         messages.push_back("New message: " + args.json.toStyledString() + " from " + args.conn.getClientName() );
     } else {
         messages.push_back("New message: " + args.message + " from " + args.conn.getClientName() );

@@ -48,5 +48,5 @@ class testApp : public ofBaseApp{
 	
 	ofxLPD8806 spi;
 	int numLED;
-	int hexColor;
+	ofColor color;
 };
