@@ -55,7 +55,7 @@ void testApp::update(){
 	}
 	ofPopStyle();
 	led->renderBuffer.end();
-	// led->encode();
+ led->encode();
 	spi.send(led->txBuffer);
 }
 
