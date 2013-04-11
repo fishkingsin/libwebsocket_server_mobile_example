@@ -2,21 +2,22 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
+	ofSetLogLevel(OF_LOG_VERBOSE);
     // setup a server with default options on port 9092
     // - pass in true after port to set up with SSL
     bConnected = server.setup( 9093 );
     
     // Uncomment this to set up a server with a protocol
     // Right now, clients created via libwebsockets that are connecting to servers
-    // made via libwebsockets seem to want a protocol. Hopefully this gets fixed, 
+    // made via libwebsockets seem to want a protocol. Hopefully this gets fixed,
     // but until now you have to do something like this:
-
+	
     /*
-    ofxLibwebsockets::ServerOptions options = ofxLibwebsockets::defaultServerOptions();
-    options.port = 9092;
-    options.protocol = "of-protocol";
-    bConnected = server.setup( options );
-    */
+	 ofxLibwebsockets::ServerOptions options = ofxLibwebsockets::defaultServerOptions();
+	 options.port = 9092;
+	 options.protocol = "of-protocol";
+	 bConnected = server.setup( options );
+	 */
     
     // this adds your app as a listener for the server
     server.addListener(this);
@@ -30,7 +31,7 @@ void testApp::setup(){
 	{
 		ofLogNotice()<<"connected to SPI";
 	}
-
+	
 }
 void testApp::exit()
 {
@@ -40,11 +41,19 @@ void testApp::exit()
 }
 //--------------------------------------------------------------
 void testApp::update(){
-
+	
 	led->renderBuffer.begin();
-	ofSetColor(color);
-	ofRect(0,0,led->renderBuffer.getWidth(),led->renderBuffer.getHeight());
-
+	ofPushStyle();
+	if(colors.size()>0)
+	{
+		float div = numLED/colors.size();
+		for(int i=0; i < colors.size(); i++)
+		{
+			ofSetColor(colors[i]);
+			ofRect(div*i,0,div,led->renderBuffer.getHeight());
+		}
+	}
+	ofPopStyle();
 	led->renderBuffer.end();
 	// led->encode();
 	spi.send(led->txBuffer);
@@ -56,7 +65,7 @@ void testApp::draw(){
         ofDrawBitmapString("WebSocket server setup at "+ofToString( server.getPort() ) + ( server.usingSSL() ? " with SSL" : " without SSL"), 20, 20);
         
         ofSetColor(150);
-        ofDrawBitmapString("Click anywhere to open up client example", 20, 40);  
+        ofDrawBitmapString("Click anywhere to open up client example", 20, 40);
     } else {
         ofDrawBitmapString("WebSocket setup failed :(", 20,20);
     }
@@ -111,31 +120,48 @@ void testApp::onIdle( ofxLibwebsockets::Event& args ){
 //--------------------------------------------------------------
 void testApp::onMessage( ofxLibwebsockets::Event& args ){
     cout<<"got message "<<args.message<<endl;
-    vector<string>sub = ofSplitString(args.message,","); 
-        if(sub.size()==3)
-        {
-            color.r = ofToInt(sub[0]);
-            color.g = ofToInt(sub[1]);
-            color.b = ofToInt(sub[2]);
-             printf("got color %i %i %i \n",color.r,color.g,color.b);
-             led->clear(color);
-        }
+	//    vector<string>sub = ofSplitString(args.message,",");
+	
+	//        if(sub.size()==3)
+	//        {
+	//            color.r = ofToInt(sub[0]);
+	//            color.g = ofToInt(sub[1]);
+	//            color.b = ofToInt(sub[2]);
+	//             printf("got color %i %i %i \n",color.r,color.g,color.b);
+	//             led->clear(color);
+	//        }
     // trace out string messages or JSON messages!
     if ( !args.json.isNull() ){
         
-		
+		ofLogVerbose("toStyledString") << args.json.toStyledString();
         messages.push_back("New message: " + args.json.toStyledString() + " from " + args.conn.getClientName() );
+		colors.clear();
+		Json::Value v = args.json.get("colors", 0);
+		for(int i = 0 ; i < v.size() ;i++)
+		{
+			//			ofLogVerbose()<< v.get(i, 0).get("color",0).asInt();
+			
+			ofColor color;
+            color.r = v.get(i, 0).get("r",0).asInt();
+            color.g = v.get(i, 0).get("g",0).asInt();
+            color.b = v.get(i, 0).get("b",0).asInt();
+			
+			colors.push_back(color);
+			
+			
+		}
     } else {
         messages.push_back("New message: " + args.message + " from " + args.conn.getClientName() );
+		ofLogVerbose("PlainText") << args.message;
     }
-        
+	
     // echo server = send message right back!
     args.conn.send( args.message );
 }
 
 //--------------------------------------------------------------
 void testApp::onBroadcast( ofxLibwebsockets::Event& args ){
-    cout<<"got broadcast "<<args.message<<endl;    
+    cout<<"got broadcast "<<args.message<<endl;
 }
 
 //--------------------------------------------------------------
@@ -159,17 +185,17 @@ void testApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-
+	
 }
 
 //--------------------------------------------------------------
@@ -184,20 +210,20 @@ void testApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::windowResized(int w, int h){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::gotMessage(ofMessage msg){
-
+	
 }
 
 //--------------------------------------------------------------
-void testApp::dragEvent(ofDragInfo dragInfo){ 
-
+void testApp::dragEvent(ofDragInfo dragInfo){
+	
 }

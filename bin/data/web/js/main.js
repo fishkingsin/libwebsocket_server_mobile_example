@@ -34,7 +34,10 @@ function changeBGC(color){
 //     return number.toString(16).toUpperCase();
 // }
 $(document).ready( function() {
-	
+	var width = $(window).width(); 
+    var height = $(window).height(); 
+    $("#container").width(width);
+    $("#container").height(height);
 	setupSocket();
 	setupDevice();
 	document.getElementById("brow").textContent = " " + BrowserDetect.browser + " "
@@ -85,9 +88,73 @@ function hsb2rgb(hsb) {
     blu = Math.floor(blu*255);
     return (new Array(red,grn,blu));
 }
+window.onresize = function(event) {
+    var width = $(window).width(); 
+    var height = $(window).height(); 
+    $("#container").width(width);
+    $("#container").height(height);
+       // window.resizeTo( w,h )
+    
 
+}
 // send value from text input
 function sendMessageForm(){
+  
+  var n=message.value.split("");
+  // var colors = [];
+  var edited = "{";
+
+
+  edited+="\"colors\": [\n";
+
+  for (var i = 0 ;i < n.length ;i++)
+  {
+    var  charCode = message.value.charCodeAt(i);
+    console.log();
+    var rgb = hsb2rgb([ofMap(charCode,48,122,0,360),100,100]);
+    
+    myColor = "#"+  rgbToHex(rgb[0],rgb[1],rgb[2]);
+    // colors.push(rgb);
+    edited+= '{"r":'+rgb[0]+
+    ',"g":'+rgb[1]+''+
+    ',"b":'+rgb[2]+'},';
+    // console.log(rgb);
+    // socket.send(rgb);
+    // changeBGC(myColor);
+  }
+  edited = edited.slice(0, -1);
+   edited+="]";
+edited += "}";
+  
+console.log(edited);
+  socket.send(edited);
+
+    message.value = "";
+    
+    changeBGC(myColor);
+}
+function ofMap(value,  inputMin,  inputMax,  outputMin,  outputMax,  clamp) {
+
+  if (Math.abs(inputMin - inputMax) < 1.19209290){
+    
+    return outputMin;
+  } else {
+    var outVal = ((value - inputMin) / (inputMax - inputMin) * (outputMax - outputMin) + outputMin);
+  
+    if( clamp ){
+      if(outputMax < outputMin){
+        if( outVal < outputMax )outVal = outputMax;
+        else if( outVal > outputMin )outVal = outputMin;
+      }else{
+        if( outVal > outputMax )outVal = outputMax;
+        else if( outVal < outputMin )outVal = outputMin;
+      }
+    }
+    return outVal;
+  }
+
+}
+function sendColor(){
     var rgb = hsb2rgb([Math.random()*360,100,100]);
     
     // var color = ((rgb[0] ) |  (rgb[1] << 8) | (rgb[2] << 16) || (1<<24));
@@ -177,7 +244,7 @@ function setupDevice()
             var change = Math.abs(x1-x2+y1-y2+z1-z2);
 
             if (change > sensitivity) {
-               sendMessageForm();
+               sendColor();
            }
 
                 // Update new position
