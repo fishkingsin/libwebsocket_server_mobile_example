@@ -35,12 +35,12 @@ function changeBGC(color){
 // }
 $(document).ready( function() {
 	var width = $(window).width(); 
-    var height = $(window).height(); 
-    $("#container").width(width);
-    $("#container").height(height);
-	setupSocket();
-	setupDevice();
-	document.getElementById("brow").textContent = " " + BrowserDetect.browser + " "
+  var height = $(window).height(); 
+  $("#container").width(width);
+  $("#container").height(height);
+  setupSocket();
+  setupDevice();
+  document.getElementById("brow").textContent = " " + BrowserDetect.browser + " "
   + BrowserDetect.version +" " + BrowserDetect.OS +" ";
 
   messageDiv = document.getElementById("messages");
@@ -56,50 +56,50 @@ $(document).ready( function() {
 		sendMessageForm();
 	};
 	$("#message").keyup(function(event){
-       if(event.keyCode == 13){
-          sendMessageForm()
-      }
-  })
-    var rgb = hsb2rgb([Math.random()*360,100,100]);
-    var color = ((0 << 24) | (rgb[0] << 16) |  (rgb[1] << 8) | rgb[2]);
+   if(event.keyCode == 13){
+    sendMessageForm()
+  }
+})
+  var rgb = hsb2rgb([Math.random()*360,100,100]);
+  var color = ((0 << 24) | (rgb[0] << 16) |  (rgb[1] << 8) | rgb[2]);
     myColor = "#"+color.toString(16);//RGB2HTML(rgb[0],rgb[1],rgb[2]);
     changeBGC(myColor);
-});
+  });
 function hsb2rgb(hsb) {
-    var red, grn, blu, i, f, p, q, t;
-    hsb[0]%=360;
-    if(hsb[2]==0) {return(new Array(0,0,0));}
-    hsb[1]/=100;
-    hsb[2]/=100;
-    hsb[0]/=60;
-    i = Math.floor(hsb[0]);
-    f = hsb[0]-i;
-    p = hsb[2]*(1-hsb[1]);
-    q = hsb[2]*(1-(hsb[1]*f));
-    t = hsb[2]*(1-(hsb[1]*(1-f)));
-    if (i==0) {red=hsb[2]; grn=t; blu=p;}
-    else if (i==1) {red=q; grn=hsb[2]; blu=p;}
-    else if (i==2) {red=p; grn=hsb[2]; blu=t;}
-    else if (i==3) {red=p; grn=q; blu=hsb[2];}
-    else if (i==4) {red=t; grn=p; blu=hsb[2];}
-    else if (i==5) {red=hsb[2]; grn=p; blu=q;}
-    red = Math.floor(red*255);
-    grn = Math.floor(grn*255);
-    blu = Math.floor(blu*255);
-    return (new Array(red,grn,blu));
+  var red, grn, blu, i, f, p, q, t;
+  hsb[0]%=360;
+  if(hsb[2]==0) {return(new Array(0,0,0));}
+  hsb[1]/=100;
+  hsb[2]/=100;
+  hsb[0]/=60;
+  i = Math.floor(hsb[0]);
+  f = hsb[0]-i;
+  p = hsb[2]*(1-hsb[1]);
+  q = hsb[2]*(1-(hsb[1]*f));
+  t = hsb[2]*(1-(hsb[1]*(1-f)));
+  if (i==0) {red=hsb[2]; grn=t; blu=p;}
+  else if (i==1) {red=q; grn=hsb[2]; blu=p;}
+  else if (i==2) {red=p; grn=hsb[2]; blu=t;}
+  else if (i==3) {red=p; grn=q; blu=hsb[2];}
+  else if (i==4) {red=t; grn=p; blu=hsb[2];}
+  else if (i==5) {red=hsb[2]; grn=p; blu=q;}
+  red = Math.floor(red*255);
+  grn = Math.floor(grn*255);
+  blu = Math.floor(blu*255);
+  return (new Array(red,grn,blu));
 }
 window.onresize = function(event) {
-    var width = $(window).width(); 
-    var height = $(window).height(); 
-    $("#container").width(width);
-    $("#container").height(height);
+  var width = $(window).width(); 
+  var height = $(window).height(); 
+  $("#container").width(width);
+  $("#container").height(height);
        // window.resizeTo( w,h )
-    
 
-}
+
+     }
 // send value from text input
 function sendMessageForm(){
-  
+
   var n=message.value.split("");
   // var colors = [];
   var edited = "{";
@@ -123,24 +123,24 @@ function sendMessageForm(){
     // changeBGC(myColor);
   }
   edited = edited.slice(0, -1);
-   edited+="]";
-edited += "}";
+  edited+="]";
+  edited += "}";
   
-console.log(edited);
+  console.log(edited);
   socket.send(edited);
 
-    message.value = "";
-    
-    changeBGC(myColor);
+  message.value = "";
+
+  changeBGC(myColor);
 }
 function ofMap(value,  inputMin,  inputMax,  outputMin,  outputMax,  clamp) {
 
   if (Math.abs(inputMin - inputMax) < 1.19209290){
-    
+
     return outputMin;
   } else {
     var outVal = ((value - inputMin) / (inputMax - inputMin) * (outputMax - outputMin) + outputMin);
-  
+
     if( clamp ){
       if(outputMax < outputMin){
         if( outVal < outputMax )outVal = outputMax;
@@ -155,32 +155,30 @@ function ofMap(value,  inputMin,  inputMax,  outputMin,  outputMax,  clamp) {
 
 }
 function sendColor(){
-    var rgb = hsb2rgb([Math.random()*360,100,100]);
-    
-    // var color = ((rgb[0] ) |  (rgb[1] << 8) | (rgb[2] << 16) || (1<<24));
-    // console.log("R: "+rgb[0] + " G: "+rgb[1] + " B: "+rgb[2]);
-    
+  var rgb = hsb2rgb([Math.random()*360,100,100]);
     myColor = "#"+  rgbToHex(rgb[0],rgb[1],rgb[2]);//RGB2HTML(rgb[0],rgb[1],rgb[2]);
-    // console.log(rgb);
+    edited+="\"colors\": [\n";
+    edited+= '{"r":'+rgb[0]+
+    ',"g":'+rgb[1]+''+
+    ',"b":'+rgb[2]+'},';
+    edited = edited.slice(0, -1);
+    edited+="]";
+    edited += "}";
     
-    // console.log("toHexx: "+myColor);
-    // color = parseInt(rgbToHex(rgb[0],rgb[1],rgb[2]),16);
-    
-    // console.log("Int: "+color);
-    socket.send(rgb);
 
+    socket.send(edited);
     // message.value = "";
     
     changeBGC(myColor);
-}
-function rgbToHex(R,G,B) {return toHex(R)+toHex(G)+toHex(B)}
-function toHex(n) {
+  }
+  function rgbToHex(R,G,B) {return toHex(R)+toHex(G)+toHex(B)}
+  function toHex(n) {
    n = parseInt(n,10);
    if (isNaN(n)) return "00";
    n = Math.max(0,Math.min(n,255));
    return "0123456789ABCDEF".charAt((n-n%16)/16)
    + "0123456789ABCDEF".charAt(n%16);
-}
+ }
 
 
 // setup web socket
@@ -226,11 +224,11 @@ function setupDevice()
     	// document.getElementById("yes").style.display="none";
 
     } else {
-        window.addEventListener('devicemotion', function (e) {
-            x1 = e.accelerationIncludingGravity.x;
-            y1 = e.accelerationIncludingGravity.y;
-            z1 = e.accelerationIncludingGravity.z;
-        }, false);
+      window.addEventListener('devicemotion', function (e) {
+        x1 = e.accelerationIncludingGravity.x;
+        y1 = e.accelerationIncludingGravity.y;
+        z1 = e.accelerationIncludingGravity.z;
+      }, false);
     	// window.ondevicemotion = function(event) {
 
     	// 	x1 = e.accelerationIncludingGravity.x;
@@ -241,16 +239,16 @@ function setupDevice()
     	setInterval(function() {
 
 
-            var change = Math.abs(x1-x2+y1-y2+z1-z2);
+        var change = Math.abs(x1-x2+y1-y2+z1-z2);
 
-            if (change > sensitivity) {
-               sendColor();
-           }
+        if (change > sensitivity) {
+         sendColor();
+       }
 
                 // Update new position
                 x2 = x1;
                 y2 = y1;
                 z2 = z1;
-            }, delay);
+              }, delay);
     } 
-}
+  }
