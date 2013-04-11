@@ -26,7 +26,7 @@ $(document).ready( function() {
 	var width = $(window).width(); 
   var height = $(window).height(); 
   $("#container").width(width);
-  $("#container").height(height);
+  $("#container").height(height*2);
   setupSocket();
   setupDevice();
   document.getElementById("brow").textContent = " " + BrowserDetect.browser + " "
@@ -42,6 +42,7 @@ $(document).ready( function() {
 	// send the form when you press enter 
 	// or when you press the button
 	button.onclick = function(e){
+    // sendColor();
 		sendMessageForm();
 	};
 	$("#message").keyup(function(event){
@@ -81,7 +82,7 @@ window.onresize = function(event) {
   var width = $(window).width(); 
   var height = $(window).height(); 
   $("#container").width(width);
-  $("#container").height(height);
+  $("#container").height(height*2);
        // window.resizeTo( w,h )
 
 
@@ -144,7 +145,8 @@ function ofMap(value,  inputMin,  inputMax,  outputMin,  outputMax,  clamp) {
 function sendColor(){
   var rgb = hsb2rgb([Math.random()*360,100,100]);
     myColor = "#"+  rgbToHex(rgb[0],rgb[1],rgb[2]);//RGB2HTML(rgb[0],rgb[1],rgb[2]);
-    edited+="\"colors\": [\n";
+    var edited = "{";
+    edited+='\"colors\": [\n';
     edited+= '{"r":'+rgb[0]+
     ',"g":'+rgb[1]+''+
     ',"b":'+rgb[2]+'},';
