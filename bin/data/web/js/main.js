@@ -8,7 +8,7 @@ var textField;
 var sensitivity = 20;
 // Position variables
 var x1 = 0, y1 = 0, z1 = 0, x2 = 0, y2 = 0, z2 = 0;
-
+var asciiTable=[];
 var delay = 10;
 var vMultiplier = 0.01;
 var myColor;
@@ -16,24 +16,13 @@ function changeBGC(color){
 	document.body.style.backgroundColor=color;
 	
 }
-// function get_random_color() {
-//     var letters = '0123456789ABCDEF'.split('');
-//     var color = '#';
-//     for (var i = 0; i < 6; i++ ) {
-//         color += letters[Math.round(Math.random() * 15)];
-//     }
-//     return color;
-// }
-// function decimalToHexString(number)
-// {
-//     if (number < 0)
-//     {
-//         number = 0xFFFFFFFF + number + 1;
-//     }
-
-//     return number.toString(16).toUpperCase();
-// }
 $(document).ready( function() {
+  for(var  i =48 ; i < 122 ; i++)
+  {
+    asciiTable.push(Math.random()*360);
+  }
+
+
 	var width = $(window).width(); 
   var height = $(window).height(); 
   $("#container").width(width);
@@ -111,16 +100,14 @@ function sendMessageForm(){
   {
     var  charCode = message.value.charCodeAt(i);
     console.log();
-    var rgb = hsb2rgb([ofMap(charCode,48,122,0,360),100,100]);
+    var rgb = hsb2rgb([asciiTable[charCode-48],100,100]);
+    // var rgb = hsb2rgb([ofMap(charCode,48,122,0,360),100,100]);
     
     myColor = "#"+  rgbToHex(rgb[0],rgb[1],rgb[2]);
-    // colors.push(rgb);
+    
     edited+= '{"r":'+rgb[0]+
     ',"g":'+rgb[1]+''+
     ',"b":'+rgb[2]+'},';
-    // console.log(rgb);
-    // socket.send(rgb);
-    // changeBGC(myColor);
   }
   edited = edited.slice(0, -1);
   edited+="]";
@@ -164,7 +151,7 @@ function sendColor(){
     edited = edited.slice(0, -1);
     edited+="]";
     edited += "}";
-    
+
 
     socket.send(edited);
     // message.value = "";
