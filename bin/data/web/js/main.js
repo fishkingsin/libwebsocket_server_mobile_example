@@ -12,6 +12,8 @@ var asciiTable=[];
 var delay = 10;
 var vMultiplier = 0.01;
 var myColor;
+var rgb = 0;
+var origRGB = hsb2rgb([Math.random()*360,100,100]);
 function changeBGC(color){
 	document.body.style.backgroundColor=color;
 	
@@ -50,7 +52,7 @@ $(document).ready( function() {
     sendMessageForm()
   }
 })
-  var rgb = hsb2rgb([Math.random()*360,100,100]);
+  // var rgb = hsb2rgb([Math.random()*360,100,100]);
   var color = ((0 << 24) | (rgb[0] << 16) |  (rgb[1] << 8) | rgb[2]);
     myColor = "#"+color.toString(16);//RGB2HTML(rgb[0],rgb[1],rgb[2]);
     changeBGC(myColor);
@@ -93,7 +95,7 @@ function sendMessageForm(){
   var n=message.value.split("");
   // var colors = [];
   var edited = "{";
-
+rgb = origRGB;
 
   edited+="\"colors\": [\n";
 
@@ -101,7 +103,7 @@ function sendMessageForm(){
   {
     var  charCode = message.value.charCodeAt(i);
     console.log();
-    var rgb = hsb2rgb([asciiTable[charCode-48],100,100]);
+    // var rgb = hsb2rgb([asciiTable[charCode-48],100,100]);
     // var rgb = hsb2rgb([ofMap(charCode,48,122,0,360),100,100]);
     
     myColor = "#"+  rgbToHex(rgb[0],rgb[1],rgb[2]);
@@ -143,7 +145,7 @@ function ofMap(value,  inputMin,  inputMax,  outputMin,  outputMax,  clamp) {
 
 }
 function sendColor(){
-  var rgb = hsb2rgb([Math.random()*360,100,100]);
+  
     myColor = "#"+  rgbToHex(rgb[0],rgb[1],rgb[2]);//RGB2HTML(rgb[0],rgb[1],rgb[2]);
     var edited = "{";
     edited+='\"colors\": [\n';
@@ -231,8 +233,16 @@ function setupDevice()
         var change = Math.abs(x1-x2+y1-y2+z1-z2);
 
         if (change > sensitivity) {
+          rgb = origRGB;
          sendColor();
        }
+       else if (change > sensitivity*0.5) 
+       {
+          rgb[0] = 0;
+          rgb[1] = 0;
+          rgb[2] = 0;
+        sendColor();  
+       }  
 
                 // Update new position
                 x2 = x1;
